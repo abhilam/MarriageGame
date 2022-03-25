@@ -11,6 +11,11 @@
 """
 import pandas as pd
 import streamlit as st
+import matplotlib.pyplot as plt
+import altair as alt
+import pydeck as pdk
+from vega_datasets import data
+from streamlit_folium import folium_static
 
 st.set_page_config(layout="wide")
 st.write("# web App to calculated Marriage Card game")
@@ -35,14 +40,21 @@ def highlight_winingplayer(column,winingPlayer):
 def reset():
     import os
     from os.path import exists
-    if exists(os.path.join(os.getcwd(),'numberofGame.txt')):
-        os.remove('numberofGame.txt')
-    if exists(os.path.join(os.getcwd(),'Final_result.csv')):
-        os.remove('Final_result.csv')
+    if exists(os.path.join(os.getcwd(),'{}.txt'.format(game_name))):
+        os.remove('{}.txt'.format(game_name))
+    if exists(os.path.join(os.getcwd(),'{}.csv'.format(game_name))):
+        os.remove('{}.csv'.format(game_name))
     from streamlit import caching
     return
 
-numberofPlayer=st.number_input('How many player',2,8,value=5,step=1)
+col1,col2=st.columns(2)
+with col1:
+    numberofPlayer=st.number_input('How many player',2,8,value=5,step=1)
+
+with col2:
+    game_name=st.text_input('Name of of your game',value='myGame')
+
+
 if numberofPlayer!=5:
     reset()
 
@@ -74,15 +86,15 @@ for i,item in enumerate(pl):
 
 def create_final_result():
     try:
-        Final_result=pd.read_csv('Final_result.csv')
+        Final_result=pd.read_csv('{}.csv'.format(game_name))
     except:
         Final_result=pd.DataFrame({'Player':players,'Final_owe':[0.0]*int(numberofPlayer)})
-        Final_result.to_csv('Final_result.csv',index=False)
+        Final_result.to_csv('{}.csv'.format(game_name),index=False)
     return Final_result
 
 def numbrofGame():
     try:
-        with open('numberofGame.txt','r') as f:
+        with open('{}.txt'.format(game_name),'r') as f:
             a=f.readline()
             a=0 if a=="" else int(a)
             return a
@@ -101,7 +113,7 @@ with st.form('game input',clear_on_submit = True):
             seen=st.checkbox('Seen',key=name_ofPlayer)
             result['Seen'].append(seen)
             print('seen',seen)
-            Mal=st.number_input('Mal',key=name_ofPlayer, step=1)
+            Mal=int(float(st.text_input('Mal',key=name_ofPlayer,value=0)))
             game=st.checkbox('Game',key=name_ofPlayer)
             dubli=st.checkbox('Dubli',key=name_ofPlayer)
 
@@ -117,7 +129,7 @@ with st.form('game input',clear_on_submit = True):
 
         numberofGame=numbrofGame()
         numberofGame+=1
-        with open('numberofGame.txt','w') as f:
+        with open('{}.txt'.format(game_name),'w') as f:
             f.truncate()
             f.write(f"{numberofGame}")
 
@@ -130,11 +142,11 @@ with st.form('game input',clear_on_submit = True):
             print(int(numberofPlayer),row['totalMal'],row['Mal'],row['Seen'],row['Game'],row['Dubli'])
             resdf.loc[index,'owe']=calculate_points(int(numberofPlayer),row['totalMal'],row['Mal'],row['Seen'],row['Game'],row['Dubli'])
         resdf.loc[resdf.Game==True,'owe']=resdf[resdf.Game==False]['owe'].sum()*-1
-        res=pd.read_csv('Final_result.csv')
+        res=pd.read_csv('{}.csv'.format(game_name))
 
         res.loc[:,'Final_owe']=Final_result.Final_owe+resdf.owe#[(resdf[['PlayerName','owe']])
         res['Game_'+str(int(numberofGame))]=resdf['owe']
-        res.to_csv('Final_result.csv',index=False)
+        res.to_csv('{}.csv'.format(game_name),index=False)
         a,b = st.columns(2)
         with a:
             final=create_final_result()
@@ -142,7 +154,7 @@ with st.form('game input',clear_on_submit = True):
             st.write('#Final Game summary')
 
             def style_specific_cell(x):
-                color='background-color: lightred'
+                color='background-color: lightblue'
                 df1=pd.DataFrame('',index=x.index,columns=x.columns)
                 df1.iloc[gamePlayer_index,-1]=color
                 return df1

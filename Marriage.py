@@ -153,7 +153,7 @@ with st.form('game input',clear_on_submit = True):
             df1=pd.DataFrame('',index=x.index,columns=x.columns)
             df1.iloc[gamePlayer_index,-1]=color
             return df1
-        st.table(final.style.apply(maximum_value_in_column, subset=final.columns[1:2], axis=0).apply(style_specific_cell,axis=None))
+        st.dataframe(final.style.apply(maximum_value_in_column, subset=final.columns[1:2], axis=0).apply(style_specific_cell,axis=None))
         #st.table(final.style.apply(style_specific_cell,axis=None))
         st.write('#curent Game Status')
         st.dataframe(resdf)

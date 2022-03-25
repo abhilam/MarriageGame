@@ -11,11 +11,7 @@
 """
 import pandas as pd
 import streamlit as st
-import matplotlib.pyplot as plt
-import altair as alt
-import pydeck as pdk
-from vega_datasets import data
-from streamlit_folium import folium_static
+
 
 st.set_page_config(layout="wide")
 st.write("# web App to calculated Marriage Card game")

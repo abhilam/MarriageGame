@@ -143,7 +143,7 @@ with st.form('game input',clear_on_submit = True):
         res.loc[:,'Final_owe']=Final_result.Final_owe+resdf.owe#[(resdf[['PlayerName','owe']])
         res['Game_'+str(int(numberofGame))]=resdf['owe']
         res.to_csv('{}.csv'.format(game_name),index=False)
-        a,b = st.columns(2)
+        a = st.columns(1)
         with a:
             final=create_final_result()
             gamePlayer_index=resdf.loc[resdf.Game==True].index[0]#['PlayerName']

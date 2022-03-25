@@ -143,21 +143,20 @@ with st.form('game input',clear_on_submit = True):
         res.loc[:,'Final_owe']=Final_result.Final_owe+resdf.owe#[(resdf[['PlayerName','owe']])
         res['Game_'+str(int(numberofGame))]=resdf['owe']
         res.to_csv('{}.csv'.format(game_name),index=False)
-        a = st.columns(1)
-        with a:
-            final=create_final_result()
-            gamePlayer_index=resdf.loc[resdf.Game==True].index[0]#['PlayerName']
-            st.write('#Final Game summary')
+        
+        final=create_final_result()
+        gamePlayer_index=resdf.loc[resdf.Game==True].index[0]#['PlayerName']
+        st.write('#Final Game summary')
 
-            def style_specific_cell(x):
-                color='background-color: lightblue'
-                df1=pd.DataFrame('',index=x.index,columns=x.columns)
-                df1.iloc[gamePlayer_index,-1]=color
-                return df1
-            st.table(final.style.apply(maximum_value_in_column, subset=final.columns[1:2], axis=0).apply(style_specific_cell,axis=None))
-            #st.table(final.style.apply(style_specific_cell,axis=None))
-            st.write('#curent Game Status')
-            st.dataframe(resdf)
+        def style_specific_cell(x):
+            color='background-color: lightblue'
+            df1=pd.DataFrame('',index=x.index,columns=x.columns)
+            df1.iloc[gamePlayer_index,-1]=color
+            return df1
+        st.table(final.style.apply(maximum_value_in_column, subset=final.columns[1:2], axis=0).apply(style_specific_cell,axis=None))
+        #st.table(final.style.apply(style_specific_cell,axis=None))
+        st.write('#curent Game Status')
+        st.dataframe(resdf)
 
 
 
